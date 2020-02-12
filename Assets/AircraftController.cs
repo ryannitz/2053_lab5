@@ -13,6 +13,7 @@ public class AircraftController : MonoBehaviour
     public bool colliding = false;
     public bool timerStarted = false;
     public bool halfway = false;
+    public bool gameOn = false;
 
     public GameController gameController;
 
@@ -34,31 +35,36 @@ public class AircraftController : MonoBehaviour
         {
             gameController.StartTimer();
             timerStarted = true;
+            gameOn = true;
         }
-        {
 
-        }
-        if (Input.GetKey(KeyCode.UpArrow) && !colliding)
+
+        if (gameOn)
         {
-            circleSpeed = 0.5f;
-        }
-        else
-        {
+            if (Input.GetKey(KeyCode.UpArrow) && !colliding)
+            {
+                circleSpeed = 0.5f;
+            }
+            else
+            {
+                circleSpeed = 0f;
+            }
+            if (Input.GetKey(KeyCode.LeftArrow))
+            {
+                selfRotationSpeed = 10f;
+            }
+            else if (Input.GetKey(KeyCode.RightArrow))
+            {
+                selfRotationSpeed = -10f;
+            }
+            else
+            {
+                selfRotationSpeed = 0f;
+            }
+        }else{
             circleSpeed = 0f;
-        }
-        if (Input.GetKey(KeyCode.LeftArrow))
-        {
-            selfRotationSpeed = 10f;
-        }
-        else if(Input.GetKey(KeyCode.RightArrow))
-        {
-            selfRotationSpeed = -10f;
-        }
-        else
-        {
             selfRotationSpeed = 0f;
         }
-
 
         circleAngle += circleSpeed * Time.deltaTime;
         circleAngle = (circleAngle + 360) % 360;
@@ -85,8 +91,10 @@ public class AircraftController : MonoBehaviour
         
         if (halfway && newPositionX >= 9.5f)
         {
+            gameOn = false;
             gameController.Win();
-            //end game or restart on lower time
+            gameController.StopTimer();
+           
         }
 
       
@@ -95,7 +103,6 @@ public class AircraftController : MonoBehaviour
     private void OnTriggerStay(Collider other)
     {
         colliding = true;
-        
     }
 
     private void OnTriggerExit(Collider other)

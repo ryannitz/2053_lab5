@@ -21,8 +21,10 @@ public class GameController : MonoBehaviour
     public Text mainText;
 
     public bool redToggled = false;
-    public bool gameWon = false;
+
+    public bool timer = false;
     public int timeSeconds = 15;
+    public float timeRemaining = 15f;
 
     public string STR_TIMER = "Remaining Time: ";
     public string STR_WIN = "You Win!";
@@ -77,6 +79,8 @@ public class GameController : MonoBehaviour
         spotLight.transform.LookAt(jet.transform);
         timerText.text = STR_TIMER + timeSeconds.ToString() + "s";
 
+
+        UpdateTime();
     }
 
     private void GameOver()
@@ -87,7 +91,6 @@ public class GameController : MonoBehaviour
 
     public void Win()
     {
-        gameWon = true;
         Debug.Log(STR_WIN);
         mainText.text = STR_WIN;
     }
@@ -98,19 +101,25 @@ public class GameController : MonoBehaviour
 
     public void StartTimer()
     {
-        InvokeRepeating("DecrementTime", 1f, 1f);
+        timer = true;
     }
 
-    private void DecrementTime()
+    public void StopTimer()//find better solution for this game control
     {
-        timeSeconds--;
+        timer = false;
+    }
+    
+
+    private void UpdateTime()
+    {
+        if (timer)
+        {
+            timeRemaining -= Time.deltaTime;
+            timeSeconds = (int)timeRemaining;
+        }
         if (timeSeconds <= 0)
         {
-            timeSeconds = 0;//because this method will keep running
-        }
-        if (timeSeconds == 0 && !gameWon)
-        {
-            GameOver();
+            GameOver();//find a way to stop the jet on gameover and not just on game win.
         }
     }
 }
