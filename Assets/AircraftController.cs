@@ -10,6 +10,12 @@ public class AircraftController : MonoBehaviour
     float selfRotationSpeed;
     Vector3 lastDirection;
 
+    public bool colliding = false;
+    public bool timerStarted = false;
+    public bool halfway = false;
+
+    public GameController gameController;
+
     void Start()
     {
         circleRadius = 10;
@@ -24,7 +30,15 @@ public class AircraftController : MonoBehaviour
     void Update()
     {
 
-        if (Input.GetKey(KeyCode.UpArrow))
+        if (!timerStarted && Input.anyKeyDown)
+        {
+            gameController.StartTimer();
+            timerStarted = true;
+        }
+        {
+
+        }
+        if (Input.GetKey(KeyCode.UpArrow) && !colliding)
         {
             circleSpeed = 0.5f;
         }
@@ -32,7 +46,6 @@ public class AircraftController : MonoBehaviour
         {
             circleSpeed = 0f;
         }
-
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             selfRotationSpeed = 10f;
@@ -48,7 +61,6 @@ public class AircraftController : MonoBehaviour
 
 
         circleAngle += circleSpeed * Time.deltaTime;
-
         circleAngle = (circleAngle + 360) % 360;
 
         float newPositionX = circleRadius * (float)Mathf.Cos(circleAngle);
@@ -65,6 +77,30 @@ public class AircraftController : MonoBehaviour
 
         transform.position = newPosition;
         lastDirection = newDirection;
+
+        if (newPositionX < 0f)
+        {
+            halfway = true;
+        }
+        
+        if (halfway && newPositionX >= 9.5f)
+        {
+            gameController.Win();
+            //end game or restart on lower time
+        }
+
+      
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        colliding = true;
+        
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        colliding = false;
     }
 }
 
