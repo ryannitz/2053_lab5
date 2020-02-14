@@ -22,12 +22,12 @@ public class GameController : MonoBehaviour
 
     public bool redToggled = false;
 
+    public bool gameOn = false;
     public bool timer = false;
     public int timeSeconds = 15;
     public float timeRemaining = 15f;
 
     public string STR_TIMER = "Remaining Time: ";
-    public string STR_WIN = "You Win!";
     public string STR_LOSE = "Game Over";
 
     // Start is called before the first frame update
@@ -42,7 +42,6 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
 
         if (Input.GetKeyDown(KeyCode.A))
         {
@@ -79,36 +78,26 @@ public class GameController : MonoBehaviour
         spotLight.transform.LookAt(jet.transform);
         timerText.text = STR_TIMER + timeSeconds.ToString() + "s";
 
-
-        UpdateTime();
+        if (gameOn)
+        {
+            UpdateTime();
+        }
     }
 
-    private void GameOver()
+    public void GameOver(string message)
     {
-        Debug.Log(STR_LOSE);
-        mainText.text = STR_LOSE;
+        Debug.Log(message);
+        mainText.text = message;
+        timer = false;
+        gameOn = false;
+        jet.SendMessage("Stop");
     }
-
-    public void Win()
-    {
-        Debug.Log(STR_WIN);
-        mainText.text = STR_WIN;
-    }
-
-
-
-
 
     public void StartTimer()
     {
         timer = true;
+        gameOn = true;
     }
-
-    public void StopTimer()//find better solution for this game control
-    {
-        timer = false;
-    }
-    
 
     private void UpdateTime()
     {
@@ -119,7 +108,12 @@ public class GameController : MonoBehaviour
         }
         if (timeSeconds <= 0)
         {
-            GameOver();//find a way to stop the jet on gameover and not just on game win.
+            GameOver(STR_LOSE);
         }
+    }
+
+    public bool GameRunning()
+    {
+        return timer && gameOn;
     }
 }

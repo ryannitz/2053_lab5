@@ -11,9 +11,9 @@ public class AircraftController : MonoBehaviour
     Vector3 lastDirection;
 
     public bool colliding = false;
-    public bool timerStarted = false;
     public bool halfway = false;
-    public bool gameOn = false;
+    public bool gameOn = true;
+    public string STR_WIN = "You Win!";
 
     public GameController gameController;
 
@@ -31,11 +31,9 @@ public class AircraftController : MonoBehaviour
     void Update()
     {
 
-        if (!timerStarted && Input.anyKeyDown)
+        if (!gameController.GameRunning() && Input.anyKeyDown)
         {
             gameController.StartTimer();
-            timerStarted = true;
-            gameOn = true;
         }
 
 
@@ -91,10 +89,7 @@ public class AircraftController : MonoBehaviour
         
         if (halfway && newPositionX >= 9.5f)
         {
-            gameOn = false;
-            gameController.Win();
-            gameController.StopTimer();
-           
+            gameController.GameOver(STR_WIN);
         }
 
       
@@ -108,6 +103,13 @@ public class AircraftController : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
         colliding = false;
+    }
+
+
+
+    public void Stop()
+    {
+        gameOn = false;
     }
 }
 
